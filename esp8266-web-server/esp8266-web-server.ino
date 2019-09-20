@@ -31,7 +31,7 @@ const int output5 = 5;
 const int output4 = 4;
 
 void setup() {
-  Serial.begin(19200);
+  Serial.begin(74880);
   // Initialize the output variables as outputs
   pinMode(output5, OUTPUT);
   pinMode(output4, OUTPUT);
