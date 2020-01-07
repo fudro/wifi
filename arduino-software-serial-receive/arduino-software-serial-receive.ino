@@ -2,8 +2,8 @@
 SoftwareSerial mySerial(5, 10); //RX, TX
 
 void setup() {
-  Serial.begin(19200);
-  mySerial.begin(19200);
+  Serial.begin(38400);
+  mySerial.begin(38400);
   delay(5000);
 
   //Create ouput pins to demonstrate wifi controlled output.
