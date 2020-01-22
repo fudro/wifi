@@ -1,9 +1,7 @@
 /*
   WiFi UDP Send and Receive String
 
- This sketch provides basic WiFi communication using UDP packets.
- a) receives a UDP packet on a specified port.
- b) sends a return UDP packet on the same port.
+ This sketch provides basic WiFi control of a robot using UDP packets.
  IMPORTANT: Both the sending and receiving hosts must use the same port number!!
 
  Tested Hardware:
@@ -12,8 +10,9 @@
  Reference:
  https://www.arduino.cc/en/Tutorial/WiFiNINAWiFiUdpSendReceiveString
 
- Modified 19 January 2020
+ Modified 18 January 2020
  by Anthony Fudd
+
  */
 
 
@@ -77,7 +76,6 @@ void loop() {
   //Receive packet. Display packet information.
   int packetSize = Udp.parsePacket();   //Get the size of the packet in bytes (1 byte = 1 octet)
   if (packetSize) {
-    Serial.println("");
     Serial.print("Received packet of size ");
     Serial.println(packetSize);
     Serial.print("From ");
@@ -91,7 +89,7 @@ void loop() {
     if (len > 0) {
       packetBuffer[len] = 0;  //Set last character of the packetBuffer to zero to create a null terminated string (C string) - Not sure why/if this is necessary
     }
-    Serial.print("Contents:");
+    Serial.println("Contents:");
     Serial.println(packetBuffer);
 
     //Compare packet. Check if the packetBuffer is equal to a desired string. Perform different commands depending on the string that was received.
@@ -101,10 +99,86 @@ void loop() {
     /*  MESSAGE OPTIONS:
      * ****************************
      */
+    //COMM TEST FUNCTIONS
+    //Control built-in LED for basic communication tests.
     if (myString.startsWith("hello")) {
       digitalWrite (ledPin, HIGH);
     }
     else if (myString.startsWith("bye")) {
+      digitalWrite (ledPin, LOW);
+    }
+
+    //MOTOR CONTROL FUNCTIONS
+    //Control all drive functions of the chassis base.
+    else if (myString.startsWith("MOVE_F")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("MOVE_B")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("TURN_L")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("TURN_R")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("SPIN_L")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("SPIN_R")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("STOP")) {
+      digitalWrite (ledPin, LOW);
+    }
+
+    //CLAW FUNCTIONS
+    //Control the rear claw on the chassis base.
+    else if (myString.startsWith("CLAW_OPEN")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("CLAW_CLOSE")) {
+      digitalWrite (ledPin, LOW);
+    }
+    //ARM FUNCTIONS
+    //Control all arm functions.
+    else if (myString.startsWith("POSE_ARM")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("ROTATE_L")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("ROTATE_R")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("LIFT_ARM")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("LOWER_ARM")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("EXTEND_ELBOW")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("RETRACT_ELBOW")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("WRIST_CW")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("WRIST_CCW")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("WRIST_HORIZONTAL")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("WRIST_VERTICAL")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("GRIP_OPEN")) {
+      digitalWrite (ledPin, LOW);
+    }
+    else if (myString.startsWith("GRIP_CLOSE")) {
       digitalWrite (ledPin, LOW);
     }
     /* 
@@ -117,15 +191,6 @@ void loop() {
     Udp.beginPacket(Udp.remoteIP(), localPort);
     Udp.write(ReplyBuffer);
     Udp.endPacket();
-
-    Serial.println("");
-    Serial.print("Reply Message: '");
-    Serial.print(ReplyBuffer);
-    Serial.println("'");
-    Serial.print("Sent to: ");
-    Serial.println(Udp.remoteIP());
-    Serial.print("On port: ");
-    Serial.println(localPort);
   }
 }
 
