@@ -1,63 +1,80 @@
 /*
-  WiFi UDP Send and Receive String
-
  This sketch provides basic WiFi control of a robot using UDP packets.
  IMPORTANT: Both the sending and receiving hosts must use the same port number!!
 
- Tested Hardware:
+ HARDWARE:
  Uno WiFi Rev2
+ Adafruit Motorshield V2.3
  
- Reference:
+ REFERENCE:
  https://www.arduino.cc/en/Tutorial/WiFiNINAWiFiUdpSendReceiveString
 
- Modified 18 January 2020
+ Modified 27 January 2020
  by Anthony Fudd
 
  */
 
-
+#include <Wire.h>
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include <WiFiUdp.h>
-#include "arduino_secrets.h"  //please enter your sensitive data in the Secret tab/arduino_secrets.h
+#include <Adafruit_MotorShield.h>
+#include "arduino_secrets.h"  //Store sensitive WiFi data in the Secret tab/arduino_secrets.h
 
-WiFiUDP Udp;
+/**************************
+ * MOTOR SHIELD OBJECTS
+ *************************/
+// Create the motor shield object with the default I2C address
+Adafruit_MotorShield AFMS = Adafruit_MotorShield(); 
+// Or, create it with a different I2C address (say for stacking)
+// Adafruit_MotorShield AFMS = Adafruit_MotorShield(0x61); 
 
+// Select the desired motor ports: M1, M2, M3 or M4.
+Adafruit_DCMotor *myMotor = AFMS.getMotor(1);   //Select Motor Port 1
+// You can also make another motor on port M2
+//Adafruit_DCMotor *myOtherMotor = AFMS.getMotor(2);
+
+/***************************
+ * WIFI OBJECT
+ **************************/
+WiFiUDP Udp;    //Create the UDP object
+
+/**************************
+ * GLOBAL VARIABLES
+ *************************/
 int status = WL_IDLE_STATUS;
 unsigned int localPort = 5555;      // local port to listen on
 char packetBuffer[255];   //buffer to hold incoming packet
 char ReplyBuffer[] = "acknowledged";       // a string to send back as a response
 int ledPin = 25;    //set pin for built-in LED of Uno Wifi Rev2 board
 
-void setup() {
-  pinMode(ledPin, OUTPUT);
-  
+
+void setup() {  
   //Initialize serial and wait for port to open:
   Serial.begin(9600);
   while (!Serial) {
     ; // wait for serial port to connect. Needed for native USB port only
   }
 
-  // check for the WiFi module:
+  //Check for the WiFi module:
   if (WiFi.status() == WL_NO_MODULE) {
     Serial.println("Communication with WiFi module failed!");
     // don't continue
     while (true);
   }
 
-  //check firmware version
+  //Check WiFi module firmware version
   String fv = WiFi.firmwareVersion();
   if (fv < WIFI_FIRMWARE_LATEST_VERSION) {
     Serial.println("Please upgrade the firmware");
   }
 
-  // attempt to connect to Wifi network. NOTE: This can take about 30 seconds.
+  //Attempt to connect to Wifi network. NOTE: This can take about 30 seconds!
   while (status != WL_CONNECTED) {
     Serial.print("Attempting to connect to SSID: ");
     Serial.println(ssid);
     // Connect to WPA/WPA2 network. Change this line if using open or WEP network:
     status = WiFi.begin(ssid, pass);
-
     // wait 10 seconds for connection:
     delay(10000);
   }
@@ -68,11 +85,23 @@ void setup() {
   // if you get a connection, report back via serial:
   Udp.begin(localPort);
 
+  //MOTOR CONTROLLER SETUP
+  AFMS.begin();  // create with the default frequency 1.6KHz
+  //AFMS.begin(1000);  // OR with a different frequency, say 1KHz
+  
+  // Set the speed to start, from 0 (off) to 255 (max speed)
+  myMotor->setSpeed(150);
+  myMotor->run(FORWARD);
+  // turn on motor
+  myMotor->run(RELEASE);
+  Serial.println("Adafruit Motorshield v2 - Ready!");
+
+  //LED FEEDBACK SETUP
+  pinMode(ledPin, OUTPUT);    //Set pinMode for visual feedback LED
   digitalWrite (ledPin, HIGH);    //turn on LED to indicate that the board is ready
 }
 
 void loop() {
-
   //Receive packet. Display packet information.
   int packetSize = Udp.parsePacket();   //Get the size of the packet in bytes (1 byte = 1 octet)
   if (packetSize) {
@@ -112,6 +141,8 @@ void loop() {
     //Control all drive functions of the chassis base.
     else if (myString.startsWith("MOVE_F")) {
       digitalWrite (ledPin, LOW);
+      motorTest();
+      digitalWrite (ledPin, HIGH);
     }
     else if (myString.startsWith("MOVE_B")) {
       digitalWrite (ledPin, LOW);
@@ -191,7 +222,48 @@ void loop() {
     Udp.beginPacket(Udp.remoteIP(), localPort);
     Udp.write(ReplyBuffer);
     Udp.endPacket();
+
+    Serial.println("");
+    Serial.print("Reply Message: '");
+    Serial.print(ReplyBuffer);
+    Serial.println("'");
+    Serial.print("Sent to: ");
+    Serial.println(Udp.remoteIP());
+    Serial.print("On port: ");
+    Serial.println(localPort);
   }
+}
+
+void motorTest() {
+  uint8_t i;
+  
+  Serial.print("Moving Forward!");
+
+  myMotor->run(FORWARD);
+  for (i=0; i<255; i++) {
+    myMotor->setSpeed(i);  
+    delay(10);
+  }
+  for (i=255; i!=0; i--) {
+    myMotor->setSpeed(i);  
+    delay(10);
+  }
+  
+  Serial.print("Moving Backward!");
+
+  myMotor->run(BACKWARD);
+  for (i=0; i<255; i++) {
+    myMotor->setSpeed(i);  
+    delay(10);
+  }
+  for (i=255; i!=0; i--) {
+    myMotor->setSpeed(i);  
+    delay(10);
+  }
+
+  Serial.print("Stopped!");
+  myMotor->run(RELEASE);
+  delay(1000);
 }
 
 
