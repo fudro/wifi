@@ -1,17 +1,19 @@
 /*
- This sketch provides basic WiFi control of a robot using UDP packets.
- IMPORTANT: Both the sending and receiving hosts must use the same port number!!
-
- HARDWARE:
- Uno WiFi Rev2
- Adafruit Motorshield V2.3
- 
- REFERENCE:
- https://www.arduino.cc/en/Tutorial/WiFiNINAWiFiUdpSendReceiveString
-
- Modified 27 January 2020
- by Anthony Fudd
-
+ * DESCRIPTION:
+ * This sketch provides basic WiFi control of a robot using UDP packets.
+ * Separate commands can be sent to the robot as individual strings.
+ * IMPORTANT: Both the sending and receiving hosts must use the same port number!!
+ * 
+ * FUNCTIONALITY:
+ * This program can communicate via UDP with the following Unity project:
+ * https://github.com/fudro/unity-robot-interface/tree/master/udp-communication
+ * 
+ * HARDWARE:
+ * Uno WiFi Rev2
+ * Adafruit Motorshield V2.3
+ * 
+ * REFERENCE:
+ * https://www.arduino.cc/en/Tutorial/WiFiNINAWiFiUdpSendReceiveString
  */
 
 #include <Wire.h>

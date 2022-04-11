@@ -1,25 +1,25 @@
 /*
-  WiFi Web Server LED Blink
-
- A simple web server that lets you blink an LED via the web.
- This sketch will print the IP address of your WiFi module (once connected)
- to the Serial monitor. From there, you can open that address in a web browser
- to turn on and off the LED on pin 25 on the Uno Wifi Rev2.
-
- If the IP address of your board is yourAddress:
- http://yourAddress/H turns the LED on
- http://yourAddress/L turns it off
-
- This example is written for a network using WPA encryption. For
- WEP or WPA, change the Wifi.begin() call accordingly.
-
- Circuit:
+ * DESCRIPTION:
+ * A simple web server that lets you blink an LED via the web.
+ * This sketch will print the IP address of your WiFi module (once connected)
+ * to the Serial monitor. From there, you can open that address in a web browser
+ * to turn on and off the LED on pin 25 on the Uno Wifi Rev2.
+ * 
+ * FUNCTIONALITY:
+ * If the IP address of your board is yourAddress: 
+ * http://yourAddress/H turns the LED on
+ * http://yourAddress/L turns it off
+ * This example is written for a network using WPA encryption. For
+ * WEP or WPA, change the Wifi.begin() call accordingly.
+ * 
+ * HARDWARE:
  * UNO WiFi Rev.2
  * Built-in LED attached to pin 25
-
- created 25 Nov 2012
- by Tom Igoe
+ * 
+ * REFERENCE:
+ * Based on original example code by by Tom Igoe, created 25 Nov 2012.
  */
+ 
 #include <SPI.h>
 #include <WiFiNINA.h>
 #include "arduino_secrets.h"  //please enter your sensitive data in the Secret tab/arduino_secrets.h
@@ -31,7 +31,7 @@ WiFiServer server(80);
 void setup() {
   Serial.begin(9600);      // initialize serial communication
   while (!Serial) {
-    ; // wait for serial port to connect. Needed for native USB port only
+    Serial.print("."); // wait for serial port to connect. Needed for native USB port only
   }
   Serial.println("Simple Web Server!");
   
